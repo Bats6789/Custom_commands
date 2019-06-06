@@ -1,11 +1,11 @@
 # Custom Commands
 ## Table of Contents
 
-[1. Author's Info.](https://github.com/Bats6789/Custom_commands#1-authors-info)
+[1. Author's Info.](#1-authors-info)
 [2. Description.](#2.-Description.)
-[3. Setup](#3. Setup)
-[4. Adding your own command](#4. Adding your own command)
-[5. TODO list.](#5. TODO list.)
+[3. Setup](#3.-Setup)
+[4. Adding your own command](#4.-Adding-your-own-command)
+[5. TODO list.](#5.-TODO-list.)
 
 ---
 
