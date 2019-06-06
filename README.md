@@ -3,13 +3,13 @@
 
 [1. Author's Info.](#1-authors-info)
 
-[2. Description.](#2.-Description.)
+[2. Description.](#2-Description)
 
-[3. Setup](#3.-Setup)
+[3. Setup](#3-Setup)
 
-[4. Adding your own command](#4.-Adding-your-own-command)
+[4. Adding your own command](#4-Adding-your-own-command)
 
-[5. TODO list.](#5.-TODO-list.)
+[5. TODO list.](#5-TODO-list)
 
 ---
 
