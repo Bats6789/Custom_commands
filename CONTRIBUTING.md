@@ -7,5 +7,5 @@ Please note I will not accept additions without the source for security reasons.
 
 If your suggesting a command to be implimented. Please email me at bats23456789@gmail.com
 
-Thank you,
+Thank you,  
 Blake Wingard
