@@ -1,0 +1,6 @@
+
+Help for merge
+
+     merge [filename1] [filename2] [filename3] - Combines the contents of "filename1" and "filename2" into "filename 3"
+
+     filename3 - If left blank a default filename will be used named "newfile.txt"

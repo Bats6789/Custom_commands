@@ -1,0 +1,8 @@
+
+Help for fileList.
+
+     fileList [filename] [directory] - Creates a file named "filename" that contains a list of all files in "directory"
+
+     filename - Name of the file. Default filename is "fileList.txt"
+
+     directory - The directory to read from. Can be a relative or absolute path. Default directory is current directory.

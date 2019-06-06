@@ -1,0 +1,12 @@
+
+Help for organizeFiles.
+
+     organizeFiles - organize all files in current directory into specified subdirectories.
+
+     switches
+
+     /A [extension] [name] add an extension to the list with folder name. Updates name if extension already exist.
+     /C [extension]        check if folder name exist for [extension].
+     /H                    help.
+     /R [extension]        remove an extension from the list.
+     /V                    view the list of extensions.

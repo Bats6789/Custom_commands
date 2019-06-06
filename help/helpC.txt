@@ -1,0 +1,4 @@
+
+Help for helpC.
+
+     helpC [command] - provides help for "command". If blank it provides a list of all custom commands.

@@ -1,0 +1,9 @@
+
+Help for dirList
+
+     dirList [filename] [path] - Creates a text file named "filename" that contains the name of all files in current
+                                 directory and sub-directories.
+
+     filename - If left blank a default filename will be used named "directoryList.txt"
+
+     path - Can be relative or absolute path. If left blank the default directory will be used.
