@@ -1,5 +1,5 @@
-#Custom Commands
-##Table of Contents
+# Custom Commands
+## Table of Contents
 
 1. Author's Info.
 2. Description.
@@ -9,16 +9,16 @@
 
 ---
 
-##1. Author's Info
+## 1. Author's Info
 Name: Blake Wingard
 Contact info: Bats23456789@gmail.com
 
-##2. Description
+## 2. Description
 This is a set of custom commands for Windows I created for fun. 
 For information on the commands use "helpC" in the command line after the setup.
 To report any bugs or suggest new commands to be added. Please contact me through email with the subject "custom commands bugs/suggestions".
 
-##3. Setup
+## 3. Setup
 After cloning or downloading the repository two things need to be done for the commands to work.
 1. Add the custom commands directory to the path.
     1. Press windows key.
@@ -40,7 +40,7 @@ After cloning or downloading the repository two things need to be done for the c
     6. Click "OK" twice.
 3. Make sure to reset any terminals before attempting to use any of the commands.
 
-##4. Adding your own command
+## 4. Adding your own command
 To add your own command it is recommended that you:
 1. Place your source code into the "source" folder.
     If your source uses your own custom library. It is recommended to place the library files into the "library" folder.
@@ -60,7 +60,7 @@ To add your own command it is recommended that you:
         (note for makefile)  
         A tab is required for the second line. Not spaces.
 
-##5. TODO list
+## 5. TODO list
 - [x] Add a file organizer.
 - [x] Add a file list creator.
 - [x] Add a file merger.
