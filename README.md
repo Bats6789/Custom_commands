@@ -14,12 +14,12 @@
 ---
 
 ## 1. Author's Info
-Name: Blake Wingard
+Name: Blake Wingard  
 Contact info: Bats23456789@gmail.com
 
 ## 2. Description
-This is a set of custom commands for Windows I created for fun. 
-For information on the commands use "helpC" in the command line after the setup.
+This is a set of custom commands for Windows I created for fun.  
+For information on the commands use "helpC" in the command line after the setup.  
 To report any bugs or suggest new commands to be added. Please contact me through email with the subject "custom commands bugs/suggestions".
 
 ## 3. Setup
