@@ -2,6 +2,7 @@
  * Name: organizeFiles.c
  * Author: Blake Wingard
  * Desc: organizes the files into a folder for each file type.
+ * Vers: 2.0.1 06/09/2019 CBW - Bug fix.
  * Vers: 2.0.0 06/04/2019 CBW - Added list features
  * Vers: 1.0.0 05/26/2019 CBW - Original code.
  */
@@ -47,6 +48,7 @@ int main( int argc, char** argv ){
      int fileScale;
      int exScale;
      int bufScale;
+
      // prepare list of folder names
      headNode = malloc( sizeof( folderNameType ) );
      headNode->nextFolder = headNode;
@@ -55,6 +57,7 @@ int main( int argc, char** argv ){
      strcat( listDir, "\\folderList.list" );
      readFileToList( listDir, headNode );
      free( listDir );
+
      if( argc == 1 ){ // sort the files
           dir = popen( "dir /a-d /b", "r" );
           if( dir == NULL ){
@@ -72,7 +75,6 @@ int main( int argc, char** argv ){
           while( fscanf( dir, "%c", &chunk ) != EOF ){
                filename[ fileIndex ] = chunk;
                if( chunk == '.' ){
-                    filename[ fileIndex ] = '.';
                     ++fileIndex;
                     while(( fscanf( dir, "%c", &chunk ) != EOF ) && ( chunk != '\n' )){
                          filename[ fileIndex ] = chunk;
@@ -164,6 +166,7 @@ int readFileToList( char *filename, folderNameType *headNode ){
      char line[ 1000 ];
      char chunks[ CBW_ROW_MAX ][ CBW_COL_MAX ];
      int count;
+
      file = fopen( filename, "r" );
      if( file == NULL ){
           printf("ERROR: Can't open file.\n");
@@ -212,6 +215,7 @@ int readFileToList( char *filename, folderNameType *headNode ){
  */
 int printFolderList( folderNameType *headNode ){
      folderNameType *currentNode;
+
      if( headNode == NULL ){
           printf("ERROR: Invalid list.\n");
           return( -1 );
@@ -238,6 +242,7 @@ int printFolderList( folderNameType *headNode ){
 int printListToFile( folderNameType *headNode ){
      folderNameType *currentNode;
      FILE *file;
+
      if( headNode == NULL ){
           printf("ERROR: Invalid list.\n");
           return( -1 );
@@ -265,6 +270,7 @@ int printListToFile( folderNameType *headNode ){
  */
 int addToList( folderNameType *headNode, char *extension, char *name ){
      folderNameType *currentNode;
+
      currentNode = headNode;
      if( headNode == NULL ){
           printf("ERROR: Invalid head node.\n");
@@ -314,6 +320,7 @@ int sortList( folderNameType **headNode ){
      folderNameType *nextNode;    // the next node to be sorted
      folderNameType *head;
      int sort;
+
      head = *headNode;
      if(( head == NULL ) || ( head == head->nextFolder )){
           printf("ERROR: Invalid list to sort.\n");
@@ -368,6 +375,7 @@ int sortList( folderNameType **headNode ){
  */
 int removeFromList( folderNameType *headNode, char *extension ){
      folderNameType *currentNode;
+
      currentNode = headNode;
      while( currentNode != NULL ){
           if( strcmpi( currentNode->extension, extension ) == 0 ){
@@ -394,6 +402,7 @@ int removeFromList( folderNameType *headNode, char *extension ){
 int printExtName( folderNameType *headNode, char *extension ){
      folderNameType *currentNode;
      int found;
+
      if( headNode == NULL ){
           printf("ERROR: Invalid list.\n");
           return( -1 );
@@ -428,6 +437,7 @@ int printExtName( folderNameType *headNode, char *extension ){
  */
 char *findFolderName( char *filetype, folderNameType *headNode ){
      folderNameType *currentNode;
+
      currentNode = headNode;
      while( currentNode != NULL ){
           if( strcmp( filetype, currentNode->extension ) == 0 ){
