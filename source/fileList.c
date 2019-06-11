@@ -9,13 +9,13 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
-#include "..\library\CBWfile.h"
+#include <dirent.h>
 
 int main( int argc, char** argv ){
-     FILE *directory;
+     DIR *directory;
+     struct dirent *directoryList;
      FILE *outFile;
      char *filename;
-     char chunk;
      int index;
           filename = malloc( sizeof( filename ) * 100 );
           strcpy( filename, "fileList.txt");
@@ -38,17 +38,19 @@ int main( int argc, char** argv ){
                return( EXIT_FAILURE );
           }
      }
-     directory = popen( "dir /a-d /b", "r" );
+     directory = opendir( "." );
      if( directory == NULL ){
           printf("ERROR: Can't view current directory.\n");
           return( EXIT_FAILURE );
      }
      // read output to file
-     while( fscanf( directory, "%c", &chunk ) != EOF ){
-          fprintf( outFile, "%c", chunk );
+     while(( directoryList = readdir( directory )) != NULL ){
+          if( opendir( directoryList->d_name ) == NULL ){
+               fprintf( outFile, "%s\n", directoryList->d_name );
+          }
      }
 
-     pclose( directory );
+     closedir( directory );
      fclose( outFile );
 
      return( EXIT_SUCCESS );
