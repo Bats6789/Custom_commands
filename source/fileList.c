@@ -2,6 +2,7 @@
  * Name: fileList.c
  * Author: Blake Wingard
  * Desc: Read a list of all files in a directory to another file
+ * Vers: 2.0.0 06/11/2019 CBW - Linux compatible.
  * Vers: 1.0.0 05/24/2019 CBW - Original code.
  */
 
@@ -13,6 +14,7 @@
 
 int main( int argc, char** argv ){
      DIR *directory;
+     DIR *checkDir;
      struct dirent *directoryList;
      FILE *outFile;
      char *filename;
@@ -45,8 +47,11 @@ int main( int argc, char** argv ){
      }
      // read output to file
      while(( directoryList = readdir( directory )) != NULL ){
-          if( opendir( directoryList->d_name ) == NULL ){
+          checkDir = opendir( directoryList->d_name );
+          if( checkDir == NULL ){
                fprintf( outFile, "%s\n", directoryList->d_name );
+          } else {
+               closedir( checkDir );
           }
      }
 

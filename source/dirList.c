@@ -2,7 +2,8 @@
  * File: dirList.c
  * Author: Blake Wingard
  * Desc: Prints a list of every file and sub-directory in the current directory.
- * Vers: 1.2.0 05/21/19 CBW - Added directory change
+ * Vers: 2.0.0 06/12/19 CBW - Linux compatible.
+ * Vers: 1.2.0 05/21/19 CBW - Added directory change.
  * Vers: 1.1.0 05/19/19 CBW - Added help
  * Vers: 1.0.0 05/18/19 CBW - Original code.
  */
@@ -14,7 +15,6 @@
 
 void help( void );
 void dirRead( FILE *fOutput, int level, char *directoryName );
-
 int main( int argc, char **argv ){
 	FILE *fOutput;
   char dir[100];
