@@ -21,4 +21,17 @@
  */
  int stringSplit( char *chunk, char del, char chunks[ CBW_ROW_MAX][ CBW_COL_MAX ] );
 
+/*
+ * Name: stringCmpI( char *firstString, char *secondString );
+ * Desc: strcmp with case insensitivity
+ * Args:
+ *      char * firstString - the first string
+ *      char * secondString - the second string
+ * Return value:
+ *      0 if they're the same;
+ *      1 if firstString is larger than secondString
+ *     -1 if firstString is smaller than secondString
+ */
+int stringCmpI( char *firstString, char *secondString );
+
 #endif

@@ -10,6 +10,7 @@
 #include <string.h>
 #include <unistd.h>
 #include "../library/CBWfile.h"
+#include "../library/CBWstring.h"
 
 void read_help( char *filename );
 int read_list( char *command );
@@ -79,7 +80,7 @@ int read_list( char *command ){
           // comparing line with command
           if( chunk == '\n' ){
                CMPcommand[ index ] = '\0';
-               if( strcmpi( CMPcommand, command ) == 0 ){
+               if( stringCmpI( CMPcommand, command ) == 0 ){
                     fclose( checkfile );
                     free( CMPcommand );
                     return( 1 );

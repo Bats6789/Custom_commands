@@ -108,17 +108,17 @@ int main( int argc, char** argv ){
           free( extension );
           free( buf );
      } else { // switches used
-          if( strcmpi( "/h", argv[ 1 ] ) == 0 ){ // help
+          if( stringCmpI( "/h", argv[ 1 ] ) == 0 ){ // help
                help();
-          } else if(( strcmpi( "/a", argv[ 1 ] ) == 0 ) && (argc == 4 )){ // add extension
+          } else if(( stringCmpI( "/a", argv[ 1 ] ) == 0 ) && (argc == 4 )){ // add extension
                addToList( headNode, argv[ 2 ], argv[ 3 ] );
                sortList( &headNode );
                printListToFile( headNode );
-          } else if( strcmpi( "/v", argv[ 1 ] ) == 0 ){ // view list
+          } else if( stringCmpI( "/v", argv[ 1 ] ) == 0 ){ // view list
                printFolderList( headNode );
-          } else if(( strcmpi( "/c", argv[ 1 ] ) == 0 ) && ( argc == 3 )){ // check extension
+          } else if(( stringCmpI( "/c", argv[ 1 ] ) == 0 ) && ( argc == 3 )){ // check extension
                printExtName( headNode, argv[ 2 ] );
-          } else if(( strcmpi( "/r", argv[ 1 ] ) == 0 ) && ( argc == 3 )){ // remove extension
+          } else if(( stringCmpI( "/r", argv[ 1 ] ) == 0 ) && ( argc == 3 )){ // remove extension
                removeFromList( headNode, argv[ 2 ] );
                printListToFile( headNode );
           } else {
@@ -263,7 +263,7 @@ int addToList( folderNameType *headNode, char *extension, char *name ){
           return( EXIT_SUCCESS );
      }
      while( currentNode->nextFolder != NULL ){
-          if( strcmpi( extension, currentNode->extension ) == 0 ){ // if it already exist, update it.
+          if( stringCmpI( extension, currentNode->extension ) == 0 ){ // if it already exist, update it.
                if( strlen( name ) > strlen( currentNode->name ) ){
                     currentNode->name = realloc( currentNode->name, sizeof( currentNode->name ) * ( strlen( name ) + 1 ));
                }
@@ -355,7 +355,7 @@ int removeFromList( folderNameType *headNode, char *extension ){
 
      currentNode = headNode;
      while( currentNode != NULL ){
-          if( strcmpi( currentNode->extension, extension ) == 0 ){
+          if( stringCmpI( currentNode->extension, extension ) == 0 ){
                currentNode->prevFolder->nextFolder = currentNode->nextFolder;
                currentNode->nextFolder->prevFolder = currentNode->prevFolder;
                free( currentNode->extension );
@@ -391,7 +391,7 @@ int printExtName( folderNameType *headNode, char *extension ){
      currentNode = headNode;
      found = 0;
      while(( currentNode != NULL ) && ( found == 0 )){
-          if( strcmpi( extension, currentNode->extension ) == 0 ){
+          if( stringCmpI( extension, currentNode->extension ) == 0 ){
                printf("extension       %s\n", currentNode->extension);
                printf("name            %s\n", currentNode->name);
                found = 1;
