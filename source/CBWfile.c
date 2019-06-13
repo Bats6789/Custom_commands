@@ -9,7 +9,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include "..\library\CBWfile.h"
+#include "../library/CBWfile.h"
 
 int readFileToSTD( char *filename ){
      FILE *file;

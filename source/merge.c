@@ -7,7 +7,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include "..\library\CBWfile.h"
+#include "../library/CBWfile.h"
 
 int main( int argc, char** argv ){
      if( argc < 3 ){

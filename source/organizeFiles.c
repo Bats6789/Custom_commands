@@ -12,8 +12,8 @@
 #include <string.h>
 #include <unistd.h>
 #include <dirent.h>
-#include "..\library\CBWfile.h"
-#include "..\library\CBWstring.h"
+#include "../library/CBWfile.h"
+#include "../library/CBWstring.h"
 
 #if defined(__WIN32__)
     #define WINDOWS 1

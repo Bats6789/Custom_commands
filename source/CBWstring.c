@@ -7,7 +7,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include "..\library\CBWstring.h"
+#include "../library/CBWstring.h"
 
 int stringSplit( char *chunk, char del, char chunks[ CBW_ROW_MAX ][ CBW_COL_MAX ] ){
      int index;
