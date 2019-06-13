@@ -70,7 +70,7 @@ int main( int argc, char** argv ){
      headNode->nextFolder = headNode;
      listDir = malloc( sizeof( listDir ) * (strlen( getenv( "commands" ) ) + 20 ));
      strcpy( listDir, getenv( "commands" ));
-     strcat( listDir, "\\folderList.list" );
+     strcat( listDir, "/folderList.list" );
      readFileToList( listDir, headNode );
      free( listDir );
      dirName = NULL;
