@@ -12,6 +12,7 @@
 #include <string.h>
 #include <unistd.h>
 #include <dirent.h>
+#include <sys/stat.h>
 #include "../library/CBWfile.h"
 #include "../library/CBWstring.h"
 

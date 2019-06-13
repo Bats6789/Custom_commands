@@ -12,6 +12,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <dirent.h>
+#include <unistd.h>
 
 void help( void );
 void dirRead( FILE *fOutput, int level, char *directoryName );
