@@ -362,8 +362,16 @@ int removeFromList( folderNameType *headNode, char *extension ){
      currentNode = headNode;
      while( currentNode != NULL ){
           if( stringCmpI( currentNode->extension, extension ) == 0 ){
-               currentNode->prevFolder->nextFolder = currentNode->nextFolder;
-               currentNode->nextFolder->prevFolder = currentNode->prevFolder;
+               if( currentNode != headNode ){
+                    currentNode->prevFolder->nextFolder = currentNode->nextFolder;
+                    currentNode->nextFolder->prevFolder = currentNode->prevFolder;
+               } else {
+                    strcpy( currentNode->extension, currentNode->nextFolder->extension );
+                    strcpy( currentNode->name, currentNode->nextFolder->name );
+                    currentNode = currentNode->nextFolder;
+                    currentNode->prevFolder->nextFolder = currentNode->nextFolder;
+                    currentNode->nextFolder->prevFolder = currentNode->prevFolder;
+               }
                free( currentNode->extension );
                free( currentNode->name );
                free( currentNode );
