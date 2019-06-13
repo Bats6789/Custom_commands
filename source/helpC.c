@@ -81,6 +81,7 @@ int read_list( char *command ){
           if( chunk == '\n' ){
                CMPcommand[ index ] = '\0';
                if( stringCmpI( CMPcommand, command ) == 0 ){
+                    strcpy( command, CMPcommand );
                     fclose( checkfile );
                     free( CMPcommand );
                     return( 1 );
