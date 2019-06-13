@@ -92,6 +92,7 @@ int main( int argc, char** argv ){
                } else {
                     getFileType( directoryList->d_name, extension, &extSize);
                     dirName = findFolderName( extension, headNode );
+                    if( strcmp( dirName, "." ) != 0 ){
 #if defined(__WIN32__)
                     mkdir( dirName );
 #else
@@ -107,6 +108,7 @@ int main( int argc, char** argv ){
                     strcat( buf, dirName );
                     strcat( buf, pipe );
                     system( buf );
+                    }
                }
           }
           closedir( directory );
