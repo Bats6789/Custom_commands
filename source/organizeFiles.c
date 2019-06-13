@@ -15,6 +15,14 @@
 #include "..\library\CBWfile.h"
 #include "..\library\CBWstring.h"
 
+#if defined(__WIN32__)
+    #define WINDOWS 1
+#else
+    #define WINDOWS 0
+#endif
+
+
+
 typedef struct folderName {
      char *extension;
      char *name;
@@ -30,24 +38,31 @@ int sortList( folderNameType **headNode );
 int removeFromList( folderNameType *headNode, char *extension );
 int printExtName( folderNameType *headNode, char *extension );
 char *findFolderName( char *filetype, folderNameType *headNode );
+void getFileType( char *filename, char *filetype, int *size );
 void help( void );
 
 int main( int argc, char** argv ){
      folderNameType *headNode;
-     FILE *dir;         // the current directory
+     DIR *directory;
+     DIR *checkForDir;
+     struct dirent *directoryList;
      char *dirName;     // the subdirectory for a file
      char *extension;
-     char *filename;
      char *buf;         // a buffer for the system function
      char *listDir;     // the directory the list is in
-     char chunk;
-     // index
-     int fileIndex;
-     int exIndex;
-     // scales memory used
-     int fileScale;
-     int exScale;
-     int bufScale;
+     char move[ 6 ];
+     char pipe[ 7 ];
+     int extSize;
+     unsigned int bufScale;
+
+     if( WINDOWS ){
+          strcpy( move, "move " );
+          strcpy( pipe, " > NUL" );
+     } else {
+          strcpy( move, "mv " );
+          pipe[ 1 ] = '\0';
+     }
+
 
      // prepare list of folder names
      headNode = malloc( sizeof( folderNameType ) );
@@ -59,75 +74,37 @@ int main( int argc, char** argv ){
      free( listDir );
 
      if( argc == 1 ){ // sort the files
-          dir = popen( "dir /a-d /b", "r" );
-          if( dir == NULL ){
-               printf("ERROR: Couldn't view directory.\n");
+          directory = opendir( "." );
+          if( directory == NULL ){
+               printf("ERROR: Failed to open directory.\n");
                return( EXIT_FAILURE );
           }
-          filename = malloc( sizeof( filename ) * 100 );
           extension = malloc( sizeof( extension ) * 10 );
           buf = malloc( sizeof( buf ) * 500 );
-          exIndex = 0;
-          fileIndex = 0;
-          exScale = 1;
-          fileScale = 1;
+          extSize = 10;
           bufScale = 1;
-          while( fscanf( dir, "%c", &chunk ) != EOF ){
-               filename[ fileIndex ] = chunk;
-               if( chunk == '.' ){
-                    ++fileIndex;
-                    while(( fscanf( dir, "%c", &chunk ) != EOF ) && ( chunk != '\n' )){
-                         filename[ fileIndex ] = chunk;
-                         extension[ exIndex ] = chunk;
-                         ++fileIndex;
-                         ++exIndex;
-                         if( exIndex == exScale * 10 ){
-                              ++exScale;
-                              extension = realloc( extension, sizeof( extension ) * 10 * exScale );
-                         }
-                         if( fileIndex == fileScale * 100 ){
-                              ++fileScale;
-                              filename = realloc( filename, sizeof( filename ) * fileScale * 100);
-                         }
-                    }
-                    filename[ fileIndex ] = '\0';
-                    extension[ exIndex ] = '\0';
+          while(( directoryList = readdir( directory )) != NULL ){
+               checkForDir = opendir( directoryList->d_name );
+               if( checkForDir != NULL ){
+                    closedir( checkForDir );
+               } else {
+                    getFileType( directoryList->d_name, extension, &extSize);
                     dirName = findFolderName( extension, headNode );
                     mkdir( dirName );
-                    while( strlen( filename ) + strlen( dirName ) + 13 >= 500 * bufScale ){
+                    while(( strlen( directoryList->d_name ) + strlen( dirName ) + 13) >= (500 * bufScale )){
                          ++bufScale;
                          buf = realloc( buf, sizeof( buf ) * bufScale * 500 );
                     }
-                    strcpy( buf, "move ");
-                    strcat( buf, filename );
+                    strcpy( buf, move );
+                    strcat( buf, directoryList->d_name );
                     strcat( buf, " " );
                     strcat( buf, dirName );
-                    strcat( buf, " > NUL");
+                    strcat( buf, pipe );
                     system( buf );
-                    fileIndex = 0;
-                    exIndex = 0;
-               } else if( chunk == '\n' ){
-                    filename[ fileIndex ] = '\0';
-                    dirName = findFolderName( "[blank]", headNode );
-                    mkdir( dirName );
-                    while( strlen( filename ) + strlen( dirName ) + 13 >= 500 * bufScale ){
-                         ++bufScale;
-                         buf = realloc( buf, sizeof( buf ) * bufScale * 500 );
-                    }
-                    strcpy( buf, "move ");
-                    strcat( buf, filename );
-                    strcat( buf, " " );
-                    strcat( buf, dirName );
-                    strcat( buf, " > NUL");
-                    system( buf );
-                    fileIndex = 0;
-                    exIndex = 0;
-               } else {
-                    ++fileIndex;
                }
           }
-          pclose( dir );
-          free( filename );
+          closedir( directory );
+          free( dirName );
           free( extension );
           free( buf );
      } else { // switches used
@@ -451,6 +428,45 @@ char *findFolderName( char *filetype, folderNameType *headNode ){
      strcpy( newname, filetype );
      strcat( newname, "_folder" );
      return( newname );
+}
+
+/*
+ * Name: getFileType( char *filename, int *size )
+ * Desc: Obtains the extension of a file.
+ * Args:
+ *      char *filename - the name of the file
+ *      char *filetype - the file extension
+ *      int *size - the size of filetype
+ */
+void getFileType( char *filename, char *filetype, int *size ){
+     int indexName;
+     int indexType;
+     int currentSize;
+
+     indexName = 0;
+     indexType = 0;
+     currentSize = 0;
+
+     while(( filename[ indexName ] != '.' ) && ( filename[ indexName ] != '\0' )){ // get to extension
+          ++indexName;
+     }
+
+     if( filename[ indexName ] == '\0' ){
+          strcpy( filetype, "[blank]" );
+     } else{
+          ++indexName;
+          while( filename[ indexName ] != '\0' ){
+               filetype[ indexType ] = filename[ indexName ];
+               ++indexName;
+               ++indexType;
+               ++currentSize;
+               if( currentSize >= *size ){
+                    filetype = realloc( filetype, sizeof( filetype ) * ( *size + 10 ));
+                    *size = *size + 10;
+               }
+          }
+          filetype[ indexType ] = '\0';
+     }
 }
 
 /*
