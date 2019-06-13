@@ -73,6 +73,7 @@ int main( int argc, char** argv ){
      strcat( listDir, "\\folderList.list" );
      readFileToList( listDir, headNode );
      free( listDir );
+     dirName = NULL;
 
      if( argc == 1 ){ // sort the files
           directory = opendir( "." );
@@ -91,7 +92,11 @@ int main( int argc, char** argv ){
                } else {
                     getFileType( directoryList->d_name, extension, &extSize);
                     dirName = findFolderName( extension, headNode );
+#if defined(__WIN32__)
                     mkdir( dirName );
+#else
+                    mkdir( dirName, ACCESSPERMS );
+#endif
                     while(( strlen( directoryList->d_name ) + strlen( dirName ) + 13) >= (500 * bufScale )){
                          ++bufScale;
                          buf = realloc( buf, sizeof( buf ) * bufScale * 500 );
