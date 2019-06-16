@@ -2,6 +2,7 @@
  * Name: helpC.c
  * Author: Blake Wingard
  * Desc: Provides help for custom made functions
+ * Vers: 1.0.1 06/16/2019 CBW - Fixed SIGTRAP
  * Vers: 1.0.0 05/22/2019 CBW - Original code
  */
 
@@ -26,7 +27,7 @@ int main( int argc, char **argv ){
      if( argc < 2 ){
           readFileToSTD( "help.txt" );
      } else {
-          commandName = malloc( sizeof( argv[ 1 ] ) * 10 );
+          commandName = malloc( sizeof( commandName ) * 10 );
           index = 0;
           scaling = 1;
           // obtain the command name without extension (if it was provided)
@@ -35,12 +36,12 @@ int main( int argc, char **argv ){
                ++index;
                if(( index % 10 ) == 0 ){
                     ++scaling;
-                    commandName = realloc( commandName, sizeof( argv[ 1 ] ) *  scaling * 10 );
+                    commandName = realloc( commandName, sizeof( commandName ) *  scaling * 10 );
                }
           }
           commandName[ index ] = '\0';
           if( read_list( commandName ) == 1 ){
-               filename = malloc(( sizeof( filename ) * scaling) + 4 );
+               filename = malloc(( sizeof( filename ) * scaling * 10 ) + 4 );
                strcpy( filename, commandName );
                strcat( filename, ".txt" );
                readFileToSTD( filename );
