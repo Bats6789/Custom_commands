@@ -18,10 +18,10 @@
 #include "../library/CBWstring.h"
 
 typedef struct folderName {
-     char *extension;
-     char *name;
-     struct folderName* nextFolder;
-     struct folderName* prevFolder;
+	char *extension;
+	char *name;
+	struct folderName* nextFolder;
+	struct folderName* prevFolder;
 } folderNameType;
 
 int readFileToList( char *filename, folderNameType *headNode );
@@ -36,98 +36,100 @@ void getFileType( char *filename, char *filetype, int *size );
 void help( void );
 
 int main( int argc, char** argv ){
-     folderNameType *headNode;
-     DIR *directory;
-     DIR *checkForDir;
-     struct dirent *directoryList;
-     char *dirName;     // the subdirectory for a file
-     char *extension;
-     char *buf;         // a buffer for the system function
-     char *listDir;     // the directory the list is in
-     char move[ 6 ];
-     char pipe[ 7 ];
-     int extSize;
-     unsigned int bufScale;
+	folderNameType *headNode;
+	DIR *directory;
+	DIR *checkForDir;
+	struct dirent *directoryList;
+	char *dirName;     // the subdirectory for a file
+	char *extension;
+	char *buf;         // a buffer for the system function
+	char *listDir;     // the directory the list is in
+	char move[ 6 ];
+	char pipe[ 7 ];
+	int extSize;
+	unsigned int bufScale;
 
 #if defined(__WIN32__)
-          strcpy( move, "move " );
-          strcpy( pipe, " > NUL" );
+	strcpy( move, "move " );
+	strcpy( pipe, " > NUL" );
 #else
-          strcpy( move, "mv " );
-          pipe[ 1 ] = '\0';
+	strcpy( move, "mv " );
+	pipe[ 1 ] = '\0';
 #endif
 
 
-     // prepare list of folder names
-     headNode = malloc( sizeof( folderNameType ) );
-     headNode->nextFolder = headNode;
-     listDir = malloc( sizeof( listDir ) * (strlen( getenv( "commands" ) ) + 20 ));
-     strcpy( listDir, getenv( "commands" ));
-     strcat( listDir, "/folderList.list" );
-     readFileToList( listDir, headNode );
-     free( listDir );
-     dirName = NULL;
+	// prepare list of folder names
+	headNode = malloc( sizeof( folderNameType ) );
+	headNode->nextFolder = headNode;
+	listDir = malloc( sizeof( listDir ) * (strlen( getenv( "commands" ) ) + 20 ));
+	strcpy( listDir, getenv( "commands" ));
+	strcat( listDir, "/folderList.list" );
+	readFileToList( listDir, headNode );
+	free( listDir );
+	dirName = NULL;
 
-     if( argc == 1 ){ // sort the files
-          directory = opendir( "." );
-          if( directory == NULL ){
-               printf("ERROR: Failed to open directory.\n");
-               return( EXIT_FAILURE );
-          }
-          extension = malloc( sizeof( extension ) * 10 );
-          buf = malloc( sizeof( buf ) * 500 );
-          extSize = 10;
-          bufScale = 1;
-          while(( directoryList = readdir( directory )) != NULL ){
-               checkForDir = opendir( directoryList->d_name );
-               if( checkForDir != NULL ){
-                    closedir( checkForDir );
-               } else {
-                    getFileType( directoryList->d_name, extension, &extSize);
-                    dirName = findFolderName( extension, headNode );
-                    if( strcmp( dirName, "." ) != 0 ){
+	if( argc == 1 ){ // sort the files
+		directory = opendir( "." );
+		if( directory == NULL ){
+			printf("ERROR: Failed to open directory.\n");
+			return( EXIT_FAILURE );
+		}
+		extension = malloc( sizeof( extension ) * 10 );
+		buf = malloc( sizeof( buf ) * 500 );
+		extSize = 10;
+		bufScale = 1;
+		while(( directoryList = readdir( directory )) != NULL ){
+			checkForDir = opendir( directoryList->d_name );
+			if( checkForDir != NULL ){
+				closedir( checkForDir );
+			} else {
+				getFileType( directoryList->d_name, extension, &extSize);
+				dirName = findFolderName( extension, headNode );
+				if( strcmp( dirName, "." ) != 0 ){
 #if defined(__WIN32__)
-                    mkdir( dirName );
+					mkdir( dirName );
 #else
-                    mkdir( dirName, ACCESSPERMS );
+					mkdir( dirName, ACCESSPERMS );
 #endif
-                    while(( strlen( directoryList->d_name ) + strlen( dirName ) + 13) >= (500 * bufScale )){
-                         ++bufScale;
-                         buf = realloc( buf, sizeof( buf ) * bufScale * 500 );
-                    }
-                    strcpy( buf, move );
-                    strcat( buf, directoryList->d_name );
-                    strcat( buf, " " );
-                    strcat( buf, dirName );
-                    strcat( buf, pipe );
-                    system( buf );
-                    }
-               }
-          }
-          closedir( directory );
-          free( dirName );
-          free( extension );
-          free( buf );
-     } else { // switches used
-          if( stringCmpI( "/h", argv[ 1 ] ) == 0 ){ // help
-               help();
-          } else if(( stringCmpI( "/a", argv[ 1 ] ) == 0 ) && (argc == 4 )){ // add extension
-               addToList( headNode, argv[ 2 ], argv[ 3 ] );
-               sortList( &headNode );
-               printListToFile( headNode );
-          } else if( stringCmpI( "/v", argv[ 1 ] ) == 0 ){ // view list
-               printFolderList( headNode );
-          } else if(( stringCmpI( "/c", argv[ 1 ] ) == 0 ) && ( argc == 3 )){ // check extension
-               printExtName( headNode, argv[ 2 ] );
-          } else if(( stringCmpI( "/r", argv[ 1 ] ) == 0 ) && ( argc == 3 )){ // remove extension
-               removeFromList( headNode, argv[ 2 ] );
-               printListToFile( headNode );
-          } else {
-               printf("ERROR: Invalid switch.\n");
-               help();
-          }
-     }
-     return( EXIT_SUCCESS );
+					while(( strlen( directoryList->d_name ) + strlen( dirName ) + 13) >= (500 * bufScale )){
+						++bufScale;
+						buf = realloc( buf, sizeof( buf ) * bufScale * 500 );
+					}
+					strcpy( buf, move );
+					strcat( buf, directoryList->d_name );
+					strcat( buf, " " );
+					strcat( buf, dirName );
+					strcat( buf, pipe );
+					if( system( buf ) == -1 ){
+						printf("ERROR: couldn't complete %s commands.\n", buf );
+					}
+				}
+			}
+		}
+		closedir( directory );
+		free( dirName );
+		free( extension );
+		free( buf );
+	} else { // switches used
+		if( stringCmpI( "/h", argv[ 1 ] ) == 0 ){ // help
+			help();
+		} else if(( stringCmpI( "/a", argv[ 1 ] ) == 0 ) && (argc == 4 )){ // add extension
+			addToList( headNode, argv[ 2 ], argv[ 3 ] );
+			sortList( &headNode );
+			printListToFile( headNode );
+		} else if( stringCmpI( "/v", argv[ 1 ] ) == 0 ){ // view list
+			printFolderList( headNode );
+		} else if(( stringCmpI( "/c", argv[ 1 ] ) == 0 ) && ( argc == 3 )){ // check extension
+			printExtName( headNode, argv[ 2 ] );
+		} else if(( stringCmpI( "/r", argv[ 1 ] ) == 0 ) && ( argc == 3 )){ // remove extension
+			removeFromList( headNode, argv[ 2 ] );
+			printListToFile( headNode );
+		} else {
+			printf("ERROR: Invalid switch.\n");
+			help();
+		}
+	}
+	return( EXIT_SUCCESS );
 }
 
 /*
@@ -138,51 +140,51 @@ int main( int argc, char** argv ){
  *      folderNameType *head_node - the start of the linked list
  */
 int readFileToList( char *filename, folderNameType *headNode ){
-     FILE* file;
-     int isHeadNode;
-     folderNameType *currentNode;
-     char line[ 1000 ];
-     char chunks[ CBW_ROW_MAX ][ CBW_COL_MAX ];
-     int count;
+	FILE* file;
+	int isHeadNode;
+	folderNameType *currentNode;
+	char line[ 1000 ];
+	char chunks[ CBW_ROW_MAX ][ CBW_COL_MAX ];
+	int count;
 
-     file = fopen( filename, "r" );
-     if( file == NULL ){
-          printf("ERROR: Can't open file.\n");
-          return( EXIT_FAILURE );
-     }
-     if( headNode == NULL ){
-          printf("ERROR: Invalid list.\n");
-          return( EXIT_FAILURE );
-     }
-     isHeadNode = 1;
-     count = 0;
-     while( fileReadLine( file, line ) > 0 ){
-          if( stringSplit( line, ',', chunks ) == 2 ){
-               if( isHeadNode == 0 ){
-                    currentNode->nextFolder = malloc( sizeof( folderNameType ) );
-                    currentNode->nextFolder->prevFolder = currentNode;
-                    currentNode = currentNode->nextFolder;
-                    currentNode->extension = malloc( sizeof( chunks[ 0 ] ) * strlen( chunks[ 0 ] ) + 1);
-                    currentNode->name = malloc( sizeof( chunks[ 1 ] ) * strlen( chunks[ 1 ] ) + 1);
-                    strcpy( currentNode->extension, chunks[ 0 ] );
-                    strcpy( currentNode->name, chunks[ 1 ] );
-                    currentNode->nextFolder = NULL;
-                    ++count;
-               } else {
-                    currentNode = headNode;
-                    currentNode->extension = malloc( sizeof( chunks[ 0 ] ) * strlen( chunks[ 0 ] ) + 1);
-                    currentNode->name = malloc( sizeof( chunks[ 1 ] ) * strlen( chunks[ 1 ] ) + 1);
-                    strcpy( currentNode->extension, chunks[ 0 ] );
-                    strcpy( currentNode->name, chunks[ 1 ] );
-                    currentNode->prevFolder = NULL;
-                    currentNode->nextFolder = NULL;
-                    ++count;
-                    isHeadNode = 0;
-               }
-          }
-     }
-     fclose( file );
-     return( count );
+	file = fopen( filename, "r" );
+	if( file == NULL ){
+		printf("ERROR: Can't open file.\n");
+		return( EXIT_FAILURE );
+	}
+	if( headNode == NULL ){
+		printf("ERROR: Invalid list.\n");
+		return( EXIT_FAILURE );
+	}
+	isHeadNode = 1;
+	count = 0;
+	while( fileReadLine( file, line ) > 0 ){
+		if( stringSplit( line, ',', chunks ) == 2 ){
+			if( isHeadNode == 0 ){
+				currentNode->nextFolder = malloc( sizeof( folderNameType ) );
+				currentNode->nextFolder->prevFolder = currentNode;
+				currentNode = currentNode->nextFolder;
+				currentNode->extension = malloc( sizeof( chunks[ 0 ] ) * strlen( chunks[ 0 ] ) + 1);
+				currentNode->name = malloc( sizeof( chunks[ 1 ] ) * strlen( chunks[ 1 ] ) + 1);
+				strcpy( currentNode->extension, chunks[ 0 ] );
+				strcpy( currentNode->name, chunks[ 1 ] );
+				currentNode->nextFolder = NULL;
+				++count;
+			} else {
+				currentNode = headNode;
+				currentNode->extension = malloc( sizeof( chunks[ 0 ] ) * strlen( chunks[ 0 ] ) + 1);
+				currentNode->name = malloc( sizeof( chunks[ 1 ] ) * strlen( chunks[ 1 ] ) + 1);
+				strcpy( currentNode->extension, chunks[ 0 ] );
+				strcpy( currentNode->name, chunks[ 1 ] );
+				currentNode->prevFolder = NULL;
+				currentNode->nextFolder = NULL;
+				++count;
+				isHeadNode = 0;
+			}
+		}
+	}
+	fclose( file );
+	return( count );
 }
 
 /*
@@ -192,23 +194,23 @@ int readFileToList( char *filename, folderNameType *headNode ){
  *      folderNameType *headNode - the start of the list
  */
 int printFolderList( folderNameType *headNode ){
-     folderNameType *currentNode;
+	folderNameType *currentNode;
 
-     if( headNode == NULL ){
-          printf("ERROR: Invalid list.\n");
-          return( -1 );
-     }
-     if( headNode->nextFolder == headNode ){
-          printf("ERROR: Empty list.\n");
-          return( -1 );
-     }
-     currentNode = headNode;
-     while( currentNode != NULL ){
-          printf("extension       %s\n", currentNode->extension);
-          printf("name            %s\n", currentNode->name);
-          currentNode = currentNode->nextFolder;
-     }
-     return( EXIT_SUCCESS );
+	if( headNode == NULL ){
+		printf("ERROR: Invalid list.\n");
+		return( -1 );
+	}
+	if( headNode->nextFolder == headNode ){
+		printf("ERROR: Empty list.\n");
+		return( -1 );
+	}
+	currentNode = headNode;
+	while( currentNode != NULL ){
+		printf("extension       %s\n", currentNode->extension);
+		printf("name            %s\n", currentNode->name);
+		currentNode = currentNode->nextFolder;
+	}
+	return( EXIT_SUCCESS );
 }
 
 /*
@@ -218,29 +220,29 @@ int printFolderList( folderNameType *headNode ){
  *      folderNameType *headNode - the start of the list
  */
 int printListToFile( folderNameType *headNode ){
-     folderNameType *currentNode;
-     FILE *file;
+	folderNameType *currentNode;
+	FILE *file;
 
-     if( headNode == NULL ){
-          printf("ERROR: Invalid list.\n");
-          return( -1 );
-     }
-     if( headNode->nextFolder == headNode ){
-          printf("ERROR: Empty list.\n");
-          return( -1 );
-     }
-     if( chdir( getenv( "commands" ) ) == -1 ){
-	     printf("ERROR: Can't access enviroment variable.\n");
-	     return( EXIT_FAILURE );
-     }
-     file = fopen( "folderList.list", "w" );
-     currentNode = headNode;
-     while( currentNode != NULL ){
-          fprintf( file, "%s,%s\n", currentNode->extension, currentNode->name);
-          currentNode = currentNode->nextFolder;
-     }
-     fclose( file );
-     return( EXIT_SUCCESS );
+	if( headNode == NULL ){
+		printf("ERROR: Invalid list.\n");
+		return( -1 );
+	}
+	if( headNode->nextFolder == headNode ){
+		printf("ERROR: Empty list.\n");
+		return( -1 );
+	}
+	if( chdir( getenv( "commands" ) ) == -1 ){
+		printf("ERROR: Can't access enviroment variable.\n");
+		return( EXIT_FAILURE );
+	}
+	file = fopen( "folderList.list", "w" );
+	currentNode = headNode;
+	while( currentNode != NULL ){
+		fprintf( file, "%s,%s\n", currentNode->extension, currentNode->name);
+		currentNode = currentNode->nextFolder;
+	}
+	fclose( file );
+	return( EXIT_SUCCESS );
 }
 
 /*
@@ -250,42 +252,42 @@ int printListToFile( folderNameType *headNode ){
  *      folderNameType *headNode - the start of the list
  */
 int addToList( folderNameType *headNode, char *extension, char *name ){
-     folderNameType *currentNode;
+	folderNameType *currentNode;
 
-     currentNode = headNode;
-     if( headNode == NULL ){
-          printf("ERROR: Invalid head node.\n");
-          return( EXIT_FAILURE );
-     }
-     if( headNode == headNode->nextFolder ){
-          currentNode->nextFolder = NULL;
-          currentNode->prevFolder = NULL;
-          currentNode->extension = malloc( sizeof( currentNode->extension ) * ( strlen( extension ) + 1 ));
-          currentNode->name = malloc( sizeof( currentNode->name ) * ( strlen( name ) + 1 ));
-          strcpy( currentNode->extension, extension );
-          strcpy( currentNode->name, name );
-          return( EXIT_SUCCESS );
-     }
-     while( currentNode->nextFolder != NULL ){
-          if( stringCmpI( extension, currentNode->extension ) == 0 ){ // if it already exist, update it.
-               if( strlen( name ) > strlen( currentNode->name ) ){
-                    currentNode->name = realloc( currentNode->name, sizeof( currentNode->name ) * ( strlen( name ) + 1 ));
-               }
-               strcpy( currentNode->name, name );
-               return( EXIT_SUCCESS );
-          }
-          currentNode = currentNode->nextFolder;
-     }
-     // create new node for the addition
-     currentNode->nextFolder = malloc( sizeof( folderNameType ) );
-     currentNode->nextFolder->prevFolder = currentNode;
-     currentNode = currentNode->nextFolder;
-     currentNode->nextFolder = NULL;
-     currentNode->extension = malloc( sizeof( currentNode->extension ) * ( strlen( extension ) + 1 ));
-     currentNode->name = malloc( sizeof( currentNode->name ) * ( strlen( name ) + 1 ));
-     strcpy( currentNode->extension, extension );
-     strcpy( currentNode->name, name );
-     return( EXIT_SUCCESS );
+	currentNode = headNode;
+	if( headNode == NULL ){
+		printf("ERROR: Invalid head node.\n");
+		return( EXIT_FAILURE );
+	}
+	if( headNode == headNode->nextFolder ){
+		currentNode->nextFolder = NULL;
+		currentNode->prevFolder = NULL;
+		currentNode->extension = malloc( sizeof( currentNode->extension ) * ( strlen( extension ) + 1 ));
+		currentNode->name = malloc( sizeof( currentNode->name ) * ( strlen( name ) + 1 ));
+		strcpy( currentNode->extension, extension );
+		strcpy( currentNode->name, name );
+		return( EXIT_SUCCESS );
+	}
+	while( currentNode->nextFolder != NULL ){
+		if( stringCmpI( extension, currentNode->extension ) == 0 ){ // if it already exist, update it.
+			if( strlen( name ) > strlen( currentNode->name ) ){
+				currentNode->name = realloc( currentNode->name, sizeof( currentNode->name ) * ( strlen( name ) + 1 ));
+			}
+			strcpy( currentNode->name, name );
+			return( EXIT_SUCCESS );
+		}
+		currentNode = currentNode->nextFolder;
+	}
+	// create new node for the addition
+	currentNode->nextFolder = malloc( sizeof( folderNameType ) );
+	currentNode->nextFolder->prevFolder = currentNode;
+	currentNode = currentNode->nextFolder;
+	currentNode->nextFolder = NULL;
+	currentNode->extension = malloc( sizeof( currentNode->extension ) * ( strlen( extension ) + 1 ));
+	currentNode->name = malloc( sizeof( currentNode->name ) * ( strlen( name ) + 1 ));
+	strcpy( currentNode->extension, extension );
+	strcpy( currentNode->name, name );
+	return( EXIT_SUCCESS );
 }
 
 /*
@@ -295,56 +297,56 @@ int addToList( folderNameType *headNode, char *extension, char *name ){
  *      folderNameType *headNode - the start of the list
  */
 int sortList( folderNameType **headNode ){
-     folderNameType *currentNode; // current node being sorted
-     folderNameType *endNode;     // last node sorted
-     folderNameType *compareNode; // node being compared to currentNode
-     folderNameType *nextNode;    // the next node to be sorted
-     folderNameType *head;
-     int sort;
+	folderNameType *currentNode; // current node being sorted
+	folderNameType *endNode;     // last node sorted
+	folderNameType *compareNode; // node being compared to currentNode
+	folderNameType *nextNode;    // the next node to be sorted
+	folderNameType *head;
+	int sort;
 
-     head = *headNode;
-     if(( head == NULL ) || ( head == head->nextFolder )){
-          printf("ERROR: Invalid list to sort.\n");
-          return( EXIT_FAILURE );
-     }
-     currentNode = head->nextFolder;
-     nextNode = currentNode->nextFolder;
-     endNode = head;
-     compareNode = head;
-     sort = 0;
-     while( currentNode != NULL ){
-          while( sort == 0 ){
-               if( strcmp( currentNode->extension, compareNode->extension ) >= 0 ){
-                    if( endNode == compareNode ){
-                         endNode->nextFolder = currentNode;
-                         currentNode->prevFolder = endNode;
-                         endNode = currentNode;
-                    } else {
-                         currentNode->nextFolder = compareNode->nextFolder;
-                         currentNode->prevFolder = compareNode;
-                         compareNode->nextFolder->prevFolder = currentNode;
-                         compareNode->nextFolder = currentNode;
-                    }
-                    sort = 1;
-               } else if( compareNode->prevFolder == NULL ){
-                    currentNode->prevFolder = NULL;
-                    currentNode->nextFolder = compareNode;
-                    compareNode->prevFolder = currentNode;
-                    *headNode = currentNode;
-                    sort = 1;
-               } else {
-                    compareNode = compareNode->prevFolder;
-               }
-          }
-          compareNode = endNode;
-          currentNode = nextNode;
-          if( currentNode != NULL ){
-               nextNode = currentNode->nextFolder;
-          }
-          sort = 0;
-     }
-     endNode->nextFolder = NULL;
-     return( EXIT_SUCCESS );
+	head = *headNode;
+	if(( head == NULL ) || ( head == head->nextFolder )){
+		printf("ERROR: Invalid list to sort.\n");
+		return( EXIT_FAILURE );
+	}
+	currentNode = head->nextFolder;
+	nextNode = currentNode->nextFolder;
+	endNode = head;
+	compareNode = head;
+	sort = 0;
+	while( currentNode != NULL ){
+		while( sort == 0 ){
+			if( strcmp( currentNode->extension, compareNode->extension ) >= 0 ){
+				if( endNode == compareNode ){
+					endNode->nextFolder = currentNode;
+					currentNode->prevFolder = endNode;
+					endNode = currentNode;
+				} else {
+					currentNode->nextFolder = compareNode->nextFolder;
+					currentNode->prevFolder = compareNode;
+					compareNode->nextFolder->prevFolder = currentNode;
+					compareNode->nextFolder = currentNode;
+				}
+				sort = 1;
+			} else if( compareNode->prevFolder == NULL ){
+				currentNode->prevFolder = NULL;
+				currentNode->nextFolder = compareNode;
+				compareNode->prevFolder = currentNode;
+				*headNode = currentNode;
+				sort = 1;
+			} else {
+				compareNode = compareNode->prevFolder;
+			}
+		}
+		compareNode = endNode;
+		currentNode = nextNode;
+		if( currentNode != NULL ){
+			nextNode = currentNode->nextFolder;
+		}
+		sort = 0;
+	}
+	endNode->nextFolder = NULL;
+	return( EXIT_SUCCESS );
 }
 
 /*
@@ -355,30 +357,30 @@ int sortList( folderNameType **headNode ){
  *      char *extension - the extension being removed
  */
 int removeFromList( folderNameType *headNode, char *extension ){
-     folderNameType *currentNode;
+	folderNameType *currentNode;
 
-     currentNode = headNode;
-     while( currentNode != NULL ){
-          if( stringCmpI( currentNode->extension, extension ) == 0 ){
-               if( currentNode != headNode ){
-                    currentNode->prevFolder->nextFolder = currentNode->nextFolder;
-                    currentNode->nextFolder->prevFolder = currentNode->prevFolder;
-               } else {
-                    strcpy( currentNode->extension, currentNode->nextFolder->extension );
-                    strcpy( currentNode->name, currentNode->nextFolder->name );
-                    currentNode = currentNode->nextFolder;
-                    currentNode->prevFolder->nextFolder = currentNode->nextFolder;
-                    currentNode->nextFolder->prevFolder = currentNode->prevFolder;
-               }
-               free( currentNode->extension );
-               free( currentNode->name );
-               free( currentNode );
-               return( EXIT_SUCCESS );
-          } else {
-               currentNode = currentNode->nextFolder;
-          }
-     }
-     return( EXIT_FAILURE );
+	currentNode = headNode;
+	while( currentNode != NULL ){
+		if( stringCmpI( currentNode->extension, extension ) == 0 ){
+			if( currentNode != headNode ){
+				currentNode->prevFolder->nextFolder = currentNode->nextFolder;
+				currentNode->nextFolder->prevFolder = currentNode->prevFolder;
+			} else {
+				strcpy( currentNode->extension, currentNode->nextFolder->extension );
+				strcpy( currentNode->name, currentNode->nextFolder->name );
+				currentNode = currentNode->nextFolder;
+				currentNode->prevFolder->nextFolder = currentNode->nextFolder;
+				currentNode->nextFolder->prevFolder = currentNode->prevFolder;
+			}
+			free( currentNode->extension );
+			free( currentNode->name );
+			free( currentNode );
+			return( EXIT_SUCCESS );
+		} else {
+			currentNode = currentNode->nextFolder;
+		}
+	}
+	return( EXIT_FAILURE );
 }
 
 /*
@@ -389,32 +391,32 @@ int removeFromList( folderNameType *headNode, char *extension ){
  *      char *extension - the extension being printed
  */
 int printExtName( folderNameType *headNode, char *extension ){
-     folderNameType *currentNode;
-     int found;
+	folderNameType *currentNode;
+	int found;
 
-     if( headNode == NULL ){
-          printf("ERROR: Invalid list.\n");
-          return( -1 );
-     }
-     if( headNode->nextFolder == headNode ){
-          printf("ERROR: Empty list.\n");
-          return( -1 );
-     }
-     currentNode = headNode;
-     found = 0;
-     while(( currentNode != NULL ) && ( found == 0 )){
-          if( stringCmpI( extension, currentNode->extension ) == 0 ){
-               printf("extension       %s\n", currentNode->extension);
-               printf("name            %s\n", currentNode->name);
-               found = 1;
-          } else {
-               currentNode = currentNode->nextFolder;
-          }
-     }
-     if( found == 0 ){
-          printf("Extension not found.\n");
-     }
-     return( EXIT_SUCCESS );
+	if( headNode == NULL ){
+		printf("ERROR: Invalid list.\n");
+		return( -1 );
+	}
+	if( headNode->nextFolder == headNode ){
+		printf("ERROR: Empty list.\n");
+		return( -1 );
+	}
+	currentNode = headNode;
+	found = 0;
+	while(( currentNode != NULL ) && ( found == 0 )){
+		if( stringCmpI( extension, currentNode->extension ) == 0 ){
+			printf("extension       %s\n", currentNode->extension);
+			printf("name            %s\n", currentNode->name);
+			found = 1;
+		} else {
+			currentNode = currentNode->nextFolder;
+		}
+	}
+	if( found == 0 ){
+		printf("Extension not found.\n");
+	}
+	return( EXIT_SUCCESS );
 }
 
 /*
@@ -425,21 +427,21 @@ int printExtName( folderNameType *headNode, char *extension ){
  *      folderNameType *headNode - the start of the list
  */
 char *findFolderName( char *filetype, folderNameType *headNode ){
-     folderNameType *currentNode;
+	folderNameType *currentNode;
 
-     currentNode = headNode;
-     while( currentNode != NULL ){
-          if( strcmp( filetype, currentNode->extension ) == 0 ){
-               return( currentNode->name );
-          } else {
-               currentNode = currentNode->nextFolder;
-          }
-     }
-     char *newname;
-     newname = malloc( sizeof( newname ) * ( strlen( filetype ) + 8 ));
-     strcpy( newname, filetype );
-     strcat( newname, "_folder" );
-     return( newname );
+	currentNode = headNode;
+	while( currentNode != NULL ){
+		if( strcmp( filetype, currentNode->extension ) == 0 ){
+			return( currentNode->name );
+		} else {
+			currentNode = currentNode->nextFolder;
+		}
+	}
+	char *newname;
+	newname = malloc( sizeof( newname ) * ( strlen( filetype ) + 8 ));
+	strcpy( newname, filetype );
+	strcat( newname, "_folder" );
+	return( newname );
 }
 
 /*
@@ -451,34 +453,34 @@ char *findFolderName( char *filetype, folderNameType *headNode ){
  *      int *size - the size of filetype
  */
 void getFileType( char *filename, char *filetype, int *size ){
-     int indexName;
-     int indexType;
-     int currentSize;
+	int indexName;
+	int indexType;
+	int currentSize;
 
-     indexName = 0;
-     indexType = 0;
-     currentSize = 0;
+	indexName = 0;
+	indexType = 0;
+	currentSize = 0;
 
-     while(( filename[ indexName ] != '.' ) && ( filename[ indexName ] != '\0' )){ // get to extension
-          ++indexName;
-     }
+	while(( filename[ indexName ] != '.' ) && ( filename[ indexName ] != '\0' )){ // get to extension
+		++indexName;
+	}
 
-     if( filename[ indexName ] == '\0' ){
-          strcpy( filetype, "[blank]" );
-     } else{
-          ++indexName;
-          while( filename[ indexName ] != '\0' ){
-               filetype[ indexType ] = filename[ indexName ];
-               ++indexName;
-               ++indexType;
-               ++currentSize;
-               if( currentSize >= *size ){
-                    filetype = realloc( filetype, sizeof( filetype ) * ( *size + 10 ));
-                    *size = *size + 10;
-               }
-          }
-          filetype[ indexType ] = '\0';
-     }
+	if( filename[ indexName ] == '\0' ){
+		strcpy( filetype, "[blank]" );
+	} else{
+		++indexName;
+		while( filename[ indexName ] != '\0' ){
+			filetype[ indexType ] = filename[ indexName ];
+			++indexName;
+			++indexType;
+			++currentSize;
+			if( currentSize >= *size ){
+				filetype = realloc( filetype, sizeof( filetype ) * ( *size + 10 ));
+				*size = *size + 10;
+			}
+		}
+		filetype[ indexType ] = '\0';
+	}
 }
 
 /*
@@ -487,9 +489,9 @@ void getFileType( char *filename, char *filetype, int *size ){
  * Args: (none)
  */
 void help( void ){
-     if( chdir( getenv( "commands" ) ) == -1 ){
-	     printf("ERROR: Can't access enviroment variable.\n");
-	     exit( 1 );
-     }
-     readFileToSTD( "organizeFiles.txt" );
+	if( chdir( getenv( "commands" ) ) == -1 ){
+		printf("ERROR: Can't access enviroment variable.\n");
+		exit( 1 );
+	}
+	readFileToSTD( "organizeFiles.txt" );
 }
