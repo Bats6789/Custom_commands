@@ -22,7 +22,10 @@ int main( int argc, char **argv ){
      int scaling;            // scales the memory allocation
      int index;
 
-     chdir( getenv( "commands" ) );
+     if( chdir( getenv( "commands" ) ) == -1 ){
+	     printf("ERROR: Couldn't access enviromental variable.\n");
+	     return( EXIT_FAILURE );
+     }
      // if no input is provided. Print basic help. If a command is specified, print its general help
      if( argc < 2 ){
           readFileToSTD( "help.txt" );

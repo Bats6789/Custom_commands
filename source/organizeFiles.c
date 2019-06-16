@@ -2,8 +2,9 @@
  * Name: organizeFiles.c
  * Author: Blake Wingard
  * Desc: organizes the files into a folder for each file type.
+ * Vers: 2.1.0 06/16/2019 CBW - Linux compatibility.
  * Vers: 2.0.1 06/09/2019 CBW - Bug fix.
- * Vers: 2.0.0 06/04/2019 CBW - Added list features
+ * Vers: 2.0.0 06/04/2019 CBW - Added list features.
  * Vers: 1.0.0 05/26/2019 CBW - Original code.
  */
 
@@ -15,14 +16,6 @@
 #include <sys/stat.h>
 #include "../library/CBWfile.h"
 #include "../library/CBWstring.h"
-
-#if defined(__WIN32__)
-    #define WINDOWS 1
-#else
-    #define WINDOWS 0
-#endif
-
-
 
 typedef struct folderName {
      char *extension;
@@ -56,13 +49,13 @@ int main( int argc, char** argv ){
      int extSize;
      unsigned int bufScale;
 
-     if( WINDOWS ){
+#if defined(__WIN32__)
           strcpy( move, "move " );
           strcpy( pipe, " > NUL" );
-     } else {
+#else
           strcpy( move, "mv " );
           pipe[ 1 ] = '\0';
-     }
+#endif
 
 
      // prepare list of folder names
@@ -236,7 +229,10 @@ int printListToFile( folderNameType *headNode ){
           printf("ERROR: Empty list.\n");
           return( -1 );
      }
-     chdir( getenv( "commands" ) );
+     if( chdir( getenv( "commands" ) ) == -1 ){
+	     printf("ERROR: Can't access enviroment variable.\n");
+	     return( EXIT_FAILURE );
+     }
      file = fopen( "folderList.list", "w" );
      currentNode = headNode;
      while( currentNode != NULL ){
@@ -491,6 +487,9 @@ void getFileType( char *filename, char *filetype, int *size ){
  * Args: (none)
  */
 void help( void ){
-     chdir( getenv( "commands" ) );
+     if( chdir( getenv( "commands" ) ) == -1 ){
+	     printf("ERROR: Can't access enviroment variable.\n");
+	     exit( 1 );
+     }
      readFileToSTD( "organizeFiles.txt" );
 }
