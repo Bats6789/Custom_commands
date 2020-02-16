@@ -70,7 +70,7 @@ To add your own command it is recommended that you:
 - [x] Add a file merger.
 - [x] Add a directory list creator.
 - [x] Add a help command.
-- [ ] Add a file/directory searcher.
+- [x] Add a file searcher.
 - [ ] Add a timer for commands.
 - [ ] Add a string in file replacer.
 - [ ] Make the switches independent of order entered.

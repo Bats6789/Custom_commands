@@ -1,7 +1,7 @@
 CC = gcc # Compiler to use
 OPTIONS = -O2 -g -Wall # -g for debug, -O2 for optimise and -Wall additional messages
 INCLUDES = -L library -l library # Directory for header file
-FILES = liblibrary.a helpC dirList merge fileList organizeFiles #lookFor # List of files to be build
+FILES = liblibrary.a helpC dirList merge fileList organizeFiles fileSearch #lookFor # List of files to be build
 LIBRARY = CBWfile.o CBWstring.o # Library files
 .PHONY: all clean # To declare all, clean are not files
 
@@ -31,5 +31,5 @@ fileList:
 organizeFiles:
 	${CC} source/organizeFiles.c -o commands/organizeFiles ${INCLUDES} ${OPTIONS}
 
-lookFor:
-	${CC} source/lookFor.c -o commands/lookFor ${INCLUDES} ${OPTIONS}
+fileSearch:
+	${CC} source/fileSearch.c -o commands/fileSearch ${INCLUDES} ${OPTIONS}

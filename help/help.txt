@@ -2,7 +2,8 @@
 Custom commands Help.
 
        dirList         |   Creates a text file containing all the files in the current directory and its sub-directory.
-       fileList        |   Creates a file containing a list of all files in a directory
+       fileList        |   Creates a file containing a list of all files in a directory.
+       fileSearch      |   Searches for a specified file.
        helpC           |   Provides help for custom commands.
        merge           |   Combines the contents of two files into a third file.
        organizeFiles   |   Organizes all files into pre-named folders.

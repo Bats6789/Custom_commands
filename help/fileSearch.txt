@@ -1,0 +1,5 @@
+
+Help for fileSearch.
+
+     fileSearch [file] - Searches the directory and sub-directories for file
+     			  and returns the absolute path to the file.
